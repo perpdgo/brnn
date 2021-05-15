@@ -1,0 +1,6 @@
+Example_1			Fit a triangle wave model
+Example_2			Fit a sine wave model
+Example_3			Two input model
+Example_4			Prediction of milk production with Additive Genomic matrix
+Example_5			Prediction of milk production with Additive and Dominant matrices
+Example_6			Prediction of ordinal response (GLS)

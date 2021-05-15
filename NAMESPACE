@@ -1,0 +1,29 @@
+useDynLib(brnn, .registration=TRUE)
+import(Formula)
+import(truncnorm)
+importFrom("stats", ".checkMFClasses", "delete.response",
+           ".getXlevels", "model.frame", "model.matrix",
+           "model.response", "na.omit", "runif", "terms",
+	       "pnorm", "qnorm")
+export(brnn,brnn_extended,brnn_ordinal,normalize, un_normalize, initnw, estimate.trace, 
+       print.brnn,summary.brnn, predict.brnn, coef.brnn, 
+       print.brnn_extended,summary.brnn_extended,predict.brnn_extended,coef.brnn_extended,
+       print.brnn_ordinal,summary.brnn_ordinal,predict.brnn_ordinal)
+
+S3method(print, brnn)
+S3method(print, brnn_extended)
+S3method(summary, brnn)
+S3method(summary, brnn_extended)
+S3method(predict, brnn)
+S3method(predict, brnn_extended)
+S3method(coef, brnn)
+S3method(coef, brnn_extended)
+S3method(brnn, default)
+S3method(brnn, formula)
+S3method(brnn_ordinal, formula)
+S3method(brnn_ordinal, default)
+S3method(brnn_extended, default)
+S3method(brnn_extended, formula)
+S3method(predict, brnn_ordinal)
+S3method(print, brnn_ordinal)
+S3method(summary, brnn_ordinal)

@@ -1,0 +1,12 @@
+SOURCES = Lanczos.c util.c init.c win/util_win.c
+
+OBJECTS = Lanczos.o util.o init.o win/util_win.o
+
+PKG_LIBS =  $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+PKG_CPPFLAGS=-I.
+
+all: $(SHLIB)
+
+clean:
+	@rm -f $(OBJECTS)
