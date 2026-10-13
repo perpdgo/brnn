@@ -1,4 +1,4 @@
-## brnn: Bayesian Regularized Neural Networks for continuous and ordinal responses
+## brnn: Bayesian Regularized Neural Networks for continuous, ordinal and categorical responses
 
 [![CRAN status](https://www.r-pkg.org/badges/version/brnn?color=green)](https://CRAN.R-project.org/package=brnn)
 [![CRAN checks](https://badges.cranchecks.info/worst/brnn.svg)](https://cran.r-project.org/web/checks/check_results_brnn.html)
