@@ -229,11 +229,12 @@ SEXP La_dtrtri_(SEXP A, SEXP size)
 	    for (int i = 0; i <= j; i++)
 		REAL(ans)[i + j * SZ] = REAL(Amat)[i + j * M];
 	}
-	
+
 	int info;
-	
-	F77_CALL(dtrtri)("Upper", "Non-unit", &sz, REAL(ans), &sz, &info);
-	
+        char uplo='U';
+        char diag='N';
+
+        F77_CALL(dtrtri)(&uplo, &diag, &sz, REAL(ans), &sz, &info FCONE FCONE);	
 	
 	if (info != 0) {
 	    UNPROTECT(nprot);
