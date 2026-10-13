@@ -151,7 +151,7 @@ HarareOrd=subset(phenoOrd,Loc=="Harare")
 evd=eigen(GOrd)
 evd$vectors=evd$vectors[,evd$value>1e-10]
 evd$values=evd$values[evd$values>1e-10]
-PC=evd$vectors%*%sqrt(diag(evd$values))
+PC=evd$vectors\%*\%sqrt(diag(evd$values))
 rownames(PC)=rownames(GOrd)
 
 #Response variable

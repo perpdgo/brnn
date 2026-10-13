@@ -26,7 +26,7 @@ Bai, Z. J., M. Fahey and G. Golub. 1996. "Some large-scale matrix computation pr
 library(brnn)
 data(Jersey)
 
-#Estimate the trace of the iverse of G matrix
+#Estimate the trace of the inverse of G matrix
 estimate.trace(G)
 
 #The TRUE value
