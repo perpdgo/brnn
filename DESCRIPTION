@@ -1,14 +1,24 @@
 Package: brnn
-Version: 0.8
-Date: 2020-01-04
+Version: 0.9.5
+Date: 2026-09-25
 Title: Bayesian Regularization for Feed-Forward Neural Networks
-Author: Paulino Perez Rodriguez, Daniel Gianola
+Authors@R: c(person(given = "Paulino",
+                      family = "Perez Rodriguez",
+                      role = c("aut", "cre"),
+                      email = "perpdgo@colpos.mx"),
+             person(given = "Daniel",
+                      family = "Gianola",
+                      role = "aut"),
+             person(given= "Elmer",
+                    family= "Nava Sanchez",
+                    role="aut"))
+Author: Paulino Perez Rodriguez [aut, cre],
+  Daniel Gianola [aut],
+  Elmer Nava Sanchez [aut]
 Maintainer: Paulino Perez Rodriguez <perpdgo@colpos.mx>
 Depends: R (>= 3.5.0), Formula, truncnorm
 Description: Bayesian regularization for feed-forward neural networks.
 LazyLoad: true
 License: GPL-2
 NeedsCompilation: yes
-Packaged: 2020-01-05 17:32:37 UTC; paulino
-Repository: CRAN
-Date/Publication: 2020-01-08 23:01:53 UTC
+Packaged: 2026-09-25 21:25:34 UTC; paulino
