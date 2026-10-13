@@ -9,3 +9,36 @@ The brnn Package ([Pérez-Rodríguez et al, 2013](https://pubmed.ncbi.nlm.nih.go
 with a single hidden layer for continuous response. The software is also able to deal ordinal 
 responses ([Pérez-Rodríguez et al, 2020](https://acsess.onlinelibrary.wiley.com/doi/full/10.1002/tpg2.20021/)). 
 This repository is a copy of the stable version which can be downloaded from [CRAN](https://cran.r-project.org/web/packages/brnn/index.html).
+
+#### Installation
+
+**From CRAN (stable release)**.
+
+```R
+install.packages(pkg='brnn',repos='https://cran.r-project.org/')
+```
+
+**From GitHub (development version, added features)**.
+
+
+```R
+#1# install devtools
+install.packages(pkg='devtools',repos='https://cran.r-project.org/')  
+#2# load the library
+library(devtools)
+#3# install brnn from GitHub                                                     
+install_git('https://github.com/perpdgo/brnn')
+```
+
+*Note*: when trying to install from github on a mac you may get the following error message
+
+```
+ld: library not found for -lgfortran
+```
+
+This can be fixed it by installing gfortan, for mac os you can use [this](https://github.com/fxcoudert/gfortran-for-macOS/releases)
+
+Useful references:
+
+ - [link1](https://yiqingxu.org/public/BigSurError.pdf).
+ - [link2](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/).
