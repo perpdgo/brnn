@@ -4,3 +4,5 @@ Example_3			Two input model
 Example_4			Prediction of milk production with Additive Genomic matrix
 Example_5			Prediction of milk production with Additive and Dominant matrices
 Example_6			Prediction of ordinal response (GLS)
+Example_7			Prediction of nominal response (Iris)
+
