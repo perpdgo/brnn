@@ -22,12 +22,12 @@ install.packages(pkg='brnn',repos='https://cran.r-project.org/')
 
 
 ```R
-#1# install remotes
-install.packages(pkg='remotes',repos='https://cran.r-project.org/')  
+#1# install pak
+install.packages(pkg='pak',repos='https://cran.r-project.org/')  
 #2# load the library
-library(remotes)
+library(pak)
 #3# install brnn from GitHub
-remotes::install_github("perpdgo/brnn")                                                     
+pak::pak("git::https://github.com/perpdgo/brnn")                                                     
 ```
 
 *Note*: when trying to install from github on a mac you may get the following error message
