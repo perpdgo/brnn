@@ -52,7 +52,7 @@ void mgcv_trisymeig(double *d,double *g,double *v,int *n,int getvec,int descendi
 		   v, /* eigenvectors on exit */  
                    &ldz, /* dimension of v */
 		   &work1, &lwork,
-		   &iwork1, &liwork, &info);
+		   &iwork1, &liwork, &info FCONE);
 
    lwork=(int)floor(work1);if (work1-lwork>0.5) lwork++;
    work=(double *)calloc((size_t)lwork,sizeof(double));
@@ -65,7 +65,7 @@ void mgcv_trisymeig(double *d,double *g,double *v,int *n,int getvec,int descendi
 		   v, /* eigenvectors on exit */  
                    &ldz, /* dimension of v */
 		   work, &lwork,
-		   iwork, &liwork, &info);
+		   iwork, &liwork, &info FCONE);
 
    if (descending) { /* need to reverse eigenvalues/vectors */
      for (i=0;i<*n/2;i++) { /* reverse the eigenvalues */
@@ -149,7 +149,7 @@ void extreme_eigenvalues(double *A,double *U,double *D,int *n, int *m, int *lm,d
     F77_NAME(dsymv)(&uplo,n,&alpha,
 		A,n,
 		q[j],&incx,
-		&beta,z,&incx);
+		&beta,z,&incx FCONE);
     /* Now form a[j] = q[j]'z.... */
     for (xx=0.0,qp=q[j],p0=qp+*n,zp=z;qp<p0;qp++,zp++) xx += *qp * *zp;
     a[j] = xx;
@@ -364,7 +364,7 @@ double Bai(double *A,int *n,double *lambdamin, double *lambdamax, double *tol, d
    {
       j++;
       /* Calculating v=A*x_old */
-      F77_NAME(dsymv)(&uplo,n,&alpha,A,n,x_old,&incx,&beta,v,&incx); 
+      F77_NAME(dsymv)(&uplo,n,&alpha,A,n,x_old,&incx,&beta,v,&incx FCONE); 
          
       /* Calculating alpha_j=v*x_old */
       sum_alpha=0;

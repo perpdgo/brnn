@@ -5,9 +5,9 @@ tools::package_native_routine_registration_skeleton("/home/pperez/brnn")
 
 */
 
+#include <stdlib.h> // for NULL
 #include <R.h>
 #include <Rinternals.h>
-#include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
 /* FIXME: 
@@ -22,6 +22,17 @@ extern SEXP estimate_trace(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP)
 extern SEXP jacobian_(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP La_dtrtri_(SEXP, SEXP);
 extern SEXP predictions_nn(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP forward_pass_nominal(
+    SEXP, SEXP, SEXP, SEXP, SEXP,
+    SEXP, SEXP, SEXP, SEXP, SEXP,
+    SEXP, SEXP, SEXP, SEXP
+);
+
+extern SEXP hessian_approx_nominal(
+    SEXP, SEXP, SEXP, SEXP,
+    SEXP, SEXP, SEXP, SEXP,
+    SEXP, SEXP, SEXP, SEXP
+);
 
 static const R_CMethodDef CEntries[] = {
     {"extreme_eigenvalues", (DL_FUNC) &extreme_eigenvalues, 7},
@@ -29,10 +40,12 @@ static const R_CMethodDef CEntries[] = {
 };
 
 static const R_CallMethodDef CallEntries[] = {
-    {"estimate_trace", (DL_FUNC) &estimate_trace, 9},
-    {"jacobian_",      (DL_FUNC) &jacobian_,      7},
-    {"La_dtrtri_",     (DL_FUNC) &La_dtrtri_,     2},
-    {"predictions_nn", (DL_FUNC) &predictions_nn, 7},
+    {"estimate_trace", 		   (DL_FUNC) &estimate_trace, 9},
+    {"jacobian_",      		   (DL_FUNC) &jacobian_,      7},
+    {"La_dtrtri_",     		   (DL_FUNC) &La_dtrtri_,     2},
+    {"predictions_nn", 		   (DL_FUNC) &predictions_nn, 7},
+    {"forward_pass_nominal",   (DL_FUNC) &forward_pass_nominal,14},
+    {"hessian_approx_nominal", (DL_FUNC) &hessian_approx_nominal,12},
     {NULL, NULL, 0}
 };
 

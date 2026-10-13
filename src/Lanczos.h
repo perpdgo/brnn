@@ -18,8 +18,15 @@
 
 #include <stdlib.h>
 #include <math.h>
+
+#define USE_FC_LEN_T
+
 #include <R.h>
 #include <R_ext/Lapack.h>
+
+#ifndef FCONE
+# define FCONE
+#endif
 
 void mgcv_trisymeig(double *d,double *g,double *v,int *n,int getvec,int descending);
 void extreme_eigenvalues(double *A,double *U,double *D,int *n, int *m, int *lm,double *tol);
