@@ -18,6 +18,7 @@
 #Madison, WI, Sep. 2012
 #Birmingaham, Alabama, Jan. 2013
 #East Lansing, Michigan, Jan. 2020
+#Texcoco, Mexico, Nov. 2023
 
 #WARNING: This is an experimental version
 
@@ -550,18 +551,8 @@ brnn_extended.default=function(x,y,z,neurons1,neurons2,normalize=TRUE,epochs=100
    npar1=neurons1*(1+1+p)
    npar2=neurons2*(1+1+q)
    
-
-   theta=initnw(neurons1+neurons2,p+q,n,npar=npar1+npar2)
-   theta1=list()
-   theta2=list()
-   for(i in 1:neurons1)
-   {
-      theta1[[i]]=theta[[i]]
-   }
-   for(i in 1:neurons2)
-   {
-      theta2[[i]]=theta[[i+neurons1]]
-   }
+   theta1=initnw(neurons1,p,n,npar1)
+   theta2=initnw(neurons2,q,n,npar2)
    
    alpha=0.01
    delta=0.01
@@ -629,7 +620,7 @@ brnn_extended.default=function(x,y,z,neurons1,neurons2,normalize=TRUE,epochs=100
       while(flag_C & flag_mu)
       {
           Q=diag(c(rep(2*alpha+mu,npar1),rep(2*delta+mu,npar2)))
-	  tmp=as.vector(c(unlist(theta1),unlist(theta2))-solve(2*beta*H+Q,g))
+	  	  tmp=as.vector(c(unlist(theta1),unlist(theta2))-solve(2*beta*H+Q,g))
 
 	  theta_new1=list()
 
@@ -642,8 +633,8 @@ brnn_extended.default=function(x,y,z,neurons1,neurons2,normalize=TRUE,epochs=100
           theta_new2=list()
           for(i in 1:neurons2)
           {
-              theta_new2[[i]]=tmp[1:(2+p)]
-	      tmp=tmp[-c(1:(2+p))]
+              theta_new2[[i]]=tmp[1:(2+q)]
+	      tmp=tmp[-c(1:(2+q))]
           }  
           
           
@@ -1041,18 +1032,13 @@ brnn_ordinal.default=function(x,y,
 ##################################################################################################
 .onAttach <- function(library, pkg)
 {
-  Rv <- R.Version()
-  if(!exists("getRversion", baseenv()) || (getRversion() < "3.1.2"))
-    stop("This package requires R 3.1.2 or later")
-  assign(".brnn.home", file.path(library, pkg),
-         pos=match("package:brnn", search()))
-  brnn.version <- "0.8 (2019-10-17)"
-  assign(".brnn.version", brnn.version, pos=match("package:brnn", search()))
+
   if(interactive())
   {
-    packageStartupMessage(paste("Package 'brnn', ", brnn.version, ". ",sep=""),appendLF=TRUE)
+    packageStartupMessage("Package 'brnn', 0.9.5 (2026-09-25)",appendLF=TRUE)
     packageStartupMessage("Type 'help(brnn)' for summary information",appendLF=TRUE)
   }
   invisible()
 }
+
 ##################################################################################################

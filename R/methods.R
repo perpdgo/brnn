@@ -18,6 +18,7 @@
 #Madison, WI, Sep. 2012
 #Birmingaham, Alabama, Jan. 2013
 #East Lansing, Michigan, Jan. 2020
+#Texcoco, Mexico, Nov. 2023
 
 print.brnn=function(x,...)
 {
@@ -178,7 +179,7 @@ print.brnn_extended=function(x,...)
 {
 	if (!inherits(x, "brnn_extended")) stop("This function only works for objects of class `brnn_extended'\n");
   	cat("A Bayesian regularized neural network \n");
-  	cat(paste(x$p,"-",x$neurons1,"-",x$neurons2,"- 1 with",x$npar1+x$npar2, "weights, biases and connection strengths\n",sep=" "));
+  	cat(paste("(",x$p,"+",x$q,")-",x$neurons1,"-",x$neurons2,"- 1 with",x$npar1+x$npar2, "weights, biases and connection strengths\n",sep=" "));
   	cat("Inputs and output were", ifelse(x$normalize,"","NOT"),"normalized\n",sep=" ");
   	cat("Training finished because ",x$reason,"\n");
 }
