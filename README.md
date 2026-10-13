@@ -1,7 +1,9 @@
 ## brnn: Bayesian Regularized Neural Networks for continuous and ordinal responses
 
-[![CRAN status](https://www.r-pkg.org/badges/version/brnn?color=green)](https://CRAN.R-project.org/package=brnn) [![CRAN checks](https://cranchecks.info/badges/worst/brnn)](https://cran.r-project.org/web/checks/check_results_brnn.html) [![Downloads](http://cranlogs.r-pkg.org/badges/brnn?color=blue)](http://www.r-pkg.org/pkg/brnn)
-
+[![CRAN status](https://www.r-pkg.org/badges/version/brnn?color=green)](https://CRAN.R-project.org/package=brnn)
+[![CRAN checks](https://badges.cranchecks.info/worst/brnn.svg)](https://cran.r-project.org/web/checks/check_results_brnn.html)
+[![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/brnn)](http://www.r-pkg.org/pkg/brnn)
+[![Downloads](https://cranlogs.r-pkg.org/badges/brnn?color=blue)](http://www.r-pkg.org/pkg/brnn)
 
 The brnn Package ([Pérez-Rodríguez et al, 2013](https://pubmed.ncbi.nlm.nih.gov/23658327/)) implements Bayesian Regularized Neural Networks 
 with a single hidden layer for continuous response. The software is also able to deal ordinal 
