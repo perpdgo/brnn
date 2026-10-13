@@ -13,3 +13,19 @@ version 0.7 (2018-08-23)
    Native routine registration   
 version 0.8 (2020-01-04)
   Added support for ordinal responses
+version 0.9 (2021-09-09)
+  Very small fixed in C source code to fix compilation problems with clang13.0.0. The inclusion of openmp headers
+  causes a compilation error if included after Rinternal.h"
+version 0.9.1 (2022-04-24)
+  Fixes to call correctly BLAS/LAPACK routines. USE_FC_LEN_T will become the default: this uses the correct
+  prototypes for Fortran BLAS/LAPACK routines called from C/C++, and requires adjustment of most such 
+  calls - see "Writing R Extensions" 6.6.2.  (This has been supported since R 3.6.2.)
+version 0.9.2 (2022-05-16)
+  Fixes a compilation problem in R-devel, the previous fix in version 0.9.1 was missing in the file 
+  src/win/util_win.c
+version 0.9.3 (2023-11-05)
+  Fixes for the brnn_extended function to allow x and z having different number of predictors
+version 0.9.4 (2025-04-19)
+  Fixes for documentation files brnn_ordinal.Rd and estimate.trace.Rd 
+version 0.9.5 (2026-09-02)
+  Add support for categorical responses
