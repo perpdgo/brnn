@@ -9,8 +9,8 @@ The brnn Package ([Pérez-Rodríguez et al, 2013](https://pubmed.ncbi.nlm.nih.go
 with a single hidden layer for continuous response. The software is also able to deal ordinal 
 responses ([Pérez-Rodríguez et al, 2020](https://acsess.onlinelibrary.wiley.com/doi/full/10.1002/tpg2.20021/)). 
 The stable version of the package can be downloaded from [CRAN](https://cran.r-project.org/web/packages/brnn/index.html). 
-This repository contains an experimental version of the package that supports **categorical responses**, the related functions are
-derived from the master student Elmer Nava-Sanchez.
+This repository contains an experimental version of the package that supports **categorical responses**, the related functions
+were written by the student Elmer Nava-Sanchez.
 
 #### Installation
 
