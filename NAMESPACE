@@ -5,8 +5,10 @@ importFrom("stats", ".checkMFClasses", "delete.response",
            ".getXlevels", "model.frame", "model.matrix",
            "model.response", "na.omit", "runif", "terms",
 	       "pnorm", "qnorm")
+importFrom("utils", "capture.output")
 	       
 export(brnn,brnn_extended,brnn_ordinal, brnn_nominal, print.brnn_nominal, coef.brnn_nominal, 
+	   adam.brnn, cv.adam.brnn, initnw_alt, get.lambda.seq, getopt.lambda, 
 	   normalize, un_normalize, initnw, estimate.trace, 
        print.brnn,summary.brnn, predict.brnn, coef.brnn, 
        print.brnn_extended,summary.brnn_extended,predict.brnn_extended,coef.brnn_extended,
@@ -35,4 +37,5 @@ S3method(brnn_nominal, default)
 S3method(brnn_nominal, formula)
 S3method(print, brnn_nominal)
 S3method(coef, brnn_nominal)
+
 
