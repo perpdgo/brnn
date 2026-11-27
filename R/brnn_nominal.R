@@ -131,7 +131,7 @@ flatten_theta_nominal <- function(theta) {
   c(
     as.vector(theta$W_out),
     theta$b_hidden,
-    as.vector(theta$Lambda),
+    as.vector(theta$W_in),
     theta$b_out
   )
 }
@@ -162,15 +162,15 @@ unflatten_theta_nominal <- function(
   
   idx <- idx + neurons
   
-  Lambda_len <- p * neurons
+  W_in_len <- p * neurons
   
-  Lambda <- matrix(
-    theta_vec[idx:(idx + Lambda_len - 1L)],
+  W_in <- matrix(
+    theta_vec[idx:(idx + W_in_len - 1L)],
     nrow = p,
     ncol = neurons
   )
   
-  idx <- idx + Lambda_len
+  idx <- idx + W_in_len
   
   b_out <- theta_vec[
     idx:(idx + K - 1L)
@@ -179,7 +179,7 @@ unflatten_theta_nominal <- function(
   list(
     W_out = W_out,
     b_hidden = b_hidden,
-    Lambda = Lambda,
+    W_in = W_in,
     b_out = b_out
   )
 }
@@ -207,7 +207,7 @@ init_theta_nominal <- function(
     max = 0.5
   )
   
-  Lambda <- matrix(
+  W_in <- matrix(
     runif(
       p * neurons,
       min = -0.5,
@@ -227,7 +227,7 @@ init_theta_nominal <- function(
     scaling_factor <- 0.7 * neurons
     
     for (k in seq_len(neurons)) {
-      Lambda[, k] <- scaling_factor
+      W_in[, k] <- scaling_factor
       
       b_hidden[k] <- runif(
         1,
@@ -240,23 +240,23 @@ init_theta_nominal <- function(
     b <- seq(-1, 1, length.out = neurons)
     
     for (k in seq_len(neurons)) {
-      norm_lambda <- sqrt(
-        sum(Lambda[, k]^2)
+      norm_W_in <- sqrt(
+        sum(W_in[, k]^2)
       )
       
-      if (norm_lambda == 0) {
-        norm_lambda <- 1
+      if (norm_W_in == 0) {
+        norm_W_in <- 1
       }
       
-      Lambda[, k] <-
+      W_in[, k] <-
         scaling_factor *
-        Lambda[, k] /
-        norm_lambda
+        W_in[, k] /
+        norm_W_in
       
       b_hidden[k] <-
         scaling_factor *
         b[k] *
-        sign(Lambda[1, k])
+        sign(W_in[1, k])
       
       if (b_hidden[k] == 0) {
         b_hidden[k] <-
@@ -269,7 +269,7 @@ init_theta_nominal <- function(
   list(
     W_out = W_out,
     b_hidden = b_hidden,
-    Lambda = Lambda,
+    W_in = W_in,
     b_out = b_out
   )
 }
@@ -305,7 +305,7 @@ forward_pass_nominal_R <- function(
   
   n <- nrow(X)
   p <- ncol(X)
-  s <- ncol(theta$Lambda)
+  s <- ncol(theta$W_in)
   K <- ncol(theta$W_out)
   
   out <- .Call(
@@ -317,7 +317,7 @@ forward_pass_nominal_R <- function(
     
     as.double(theta$W_out),
     as.double(theta$b_hidden),
-    as.double(theta$Lambda),
+    as.double(theta$W_in),
     as.double(theta$b_out),
     
     as.integer(s),
@@ -373,12 +373,12 @@ loss_function_nominal <- function(
     Y,
     P,
     theta,
-    alpha,
+    lambda,
     eps = 1e-10
 ) {
   L <- -sum(Y * log(P + eps))
   EW <- 0.5 * Ew_nominal(theta)
-  F <- L + alpha * EW
+  F <- L + lambda * EW
   
   list(
     L = L,
@@ -394,7 +394,7 @@ gradient_function_nominal <- function(
     theta,
     fp,
     activation = "tanh",
-    alpha = 0
+    lambda = 0
 ) {
   P <- fp$P
   U <- fp$U
@@ -423,14 +423,14 @@ gradient_function_nominal <- function(
     hidden_signal
   )
   
-  # Gradient with respect to Lambda
-  grad_Lambda <- t(X) %*%
+  # Gradient with respect to W_in
+  grad_W_in <- t(X) %*%
     hidden_signal
   
   grad_theta <- list(
     W_out = grad_W_out,
     b_hidden = grad_b_hidden,
-    Lambda = grad_Lambda,
+    W_in = grad_W_in,
     b_out = grad_b_out
   )
   
@@ -440,13 +440,13 @@ gradient_function_nominal <- function(
   
   grad_vec <-
     flatten_theta_nominal(grad_theta) +
-    alpha * theta_vec
+    lambda * theta_vec
   
   list(
     grad_theta = unflatten_theta_nominal(
       grad_vec,
       p = ncol(X),
-      neurons = ncol(theta$Lambda),
+      neurons = ncol(theta$W_in),
       K = length(theta$b_out)
     ),
     grad_vec = grad_vec
@@ -465,7 +465,7 @@ hessian_approx_nominal_R <- function(
   
   n <- nrow(X)
   p <- ncol(X)
-  s <- ncol(theta$Lambda)
+  s <- ncol(theta$W_in)
   K <- ncol(theta$W_out)
   
   q <- s * K +
@@ -482,7 +482,7 @@ hessian_approx_nominal_R <- function(
     as.double(fp$H),
     
     as.double(theta$W_out),
-    as.double(theta$Lambda),
+    as.double(theta$W_in),
     
     as.integer(n),
     as.integer(p),
@@ -525,12 +525,12 @@ solve_chol_nominal <- function(A, b) {
 }
 
 # Update the regularization parameter
-update_alpha_nominal <- function(
+update_lambda_nominal <- function(
     H_data,
     theta,
-    alpha,
-    alpha_min = 1e-8,
-    alpha_max = 1e8
+    lambda,
+    lambda_min = 1e-8,
+    lambda_max = 1e8
 ) {
   q <- nrow(H_data)
   EW_full <- 0.5 * Ew_nominal(theta)
@@ -538,14 +538,14 @@ update_alpha_nominal <- function(
   if (EW_full <= 0) {
     return(
       list(
-        alpha = alpha,
+        lambda = lambda,
         gamma = q
       )
     )
   }
   
   A_reg <- H_data
-  diag(A_reg) <- diag(A_reg) + alpha
+  diag(A_reg) <- diag(A_reg) + lambda
   
   trace_inv <- tryCatch({
     R <- chol(A_reg)
@@ -557,26 +557,26 @@ update_alpha_nominal <- function(
   if (!is.finite(trace_inv)) {
     return(
       list(
-        alpha = alpha,
+        lambda = lambda,
         gamma = q
       )
     )
   }
   
-  gamma <- q - alpha * trace_inv
+  gamma <- q - lambda * trace_inv
   gamma <- max(
     min(gamma, q),
     1e-8
   )
   
-  alpha_new <- gamma / EW_full
-  alpha_new <- max(
-    min(alpha_new, alpha_max),
-    alpha_min
+  lambda_new <- gamma / EW_full
+  lambda_new <- max(
+    min(lambda_new, lambda_max),
+    lambda_min
   )
   
   list(
-    alpha = alpha_new,
+    lambda = lambda_new,
     gamma = gamma
   )
 }
@@ -802,7 +802,7 @@ brnn_nominal.default <- function(
     activation = "tanh",
     normalize = TRUE,
     epochs = 200,
-    alpha_init = 0.01,
+    lambda_init = 0.01,
     mu = 0.005,
     mu_dec = 0.1,
     mu_inc = 10,
@@ -859,7 +859,7 @@ brnn_nominal.default <- function(
     K = K
   )
   
-  alpha <- alpha_init
+  lambda <- lambda_init
   
   q <- theta_dimension_nominal(
     p,
@@ -884,7 +884,7 @@ brnn_nominal.default <- function(
   F_history <- numeric(epochs)
   L_history <- numeric(epochs)
   Ew_history <- numeric(epochs)
-  alpha_history <- numeric(epochs)
+  lambda_history <- numeric(epochs)
   gamma_history <- numeric(epochs)
   mu_history <- numeric(epochs)
   grad_history <- numeric(epochs)
@@ -907,7 +907,7 @@ brnn_nominal.default <- function(
       Y,
       fp$P,
       theta,
-      alpha
+      lambda
     )
     
     # Gradient
@@ -917,7 +917,7 @@ brnn_nominal.default <- function(
       theta = theta,
       fp = fp,
       activation = activation,
-      alpha = 0
+      lambda = 0
     )
     
     grad_data <- gr_data$grad_vec
@@ -926,7 +926,7 @@ brnn_nominal.default <- function(
       theta
     )
     
-    grad <- grad_data + alpha * theta_vec
+    grad <- grad_data + lambda * theta_vec
     grad_norm <- sqrt(sum(grad^2))
     
     # Approximation of the Hessian matrix
@@ -937,32 +937,32 @@ brnn_nominal.default <- function(
       activation = activation
     )
     
-    # Update alpha
-    upd_alpha <- update_alpha_nominal(
+    # Update lambda
+    upd_lambda <- update_lambda_nominal(
       H_data,
       theta,
-      alpha
+      lambda
     )
     
-    alpha <- upd_alpha$alpha
-    gamma <- upd_alpha$gamma
+    lambda <- upd_lambda$lambda
+    gamma <- upd_lambda$gamma
     
-    # Evaluation using the updated alpha
+    # Evaluation using the updated lambda
     loss_now <- loss_function_nominal(
       Y,
       fp$P,
       theta,
-      alpha
+      lambda
     )
     
-    grad <- grad_data + alpha * theta_vec
+    grad <- grad_data + lambda * theta_vec
     grad_norm <- sqrt(sum(grad^2))
     F_now <- loss_now$F
     
     F_history[epoch] <- F_now
     L_history[epoch] <- loss_now$L
     Ew_history[epoch] <- loss_now$EW
-    alpha_history[epoch] <- alpha
+    lambda_history[epoch] <- lambda
     gamma_history[epoch] <- gamma
     mu_history[epoch] <- mu
     grad_history[epoch] <- grad_norm
@@ -973,7 +973,7 @@ brnn_nominal.default <- function(
         "| F =", round(F_now, 8),
         "| L =", round(loss_now$L, 8),
         "| Ew =", round(loss_now$EW, 8),
-        "| alpha =", format(alpha, scientific = TRUE),
+        "| lambda =", format(lambda, scientific = TRUE),
         "| gamma =", round(gamma, 6),
         "| grad =", round(grad_norm, 8),
         "| mu =", format(mu, scientific = TRUE),
@@ -993,7 +993,7 @@ brnn_nominal.default <- function(
     
     while (!accepted && mu <= mu_max) {
       A <- H_data
-      diag(A) <- diag(A) + alpha + mu
+      diag(A) <- diag(A) + lambda + mu
       
       step <- solve_chol_nominal(
         A,
@@ -1030,7 +1030,7 @@ brnn_nominal.default <- function(
         Y,
         fp_prop$P,
         theta_prop,
-        alpha
+        lambda
       )
       
       F_prop <- loss_prop$F
@@ -1081,7 +1081,7 @@ brnn_nominal.default <- function(
   F_history <- F_history[1:epoch]
   L_history <- L_history[1:epoch]
   Ew_history <- Ew_history[1:epoch]
-  alpha_history <- alpha_history[1:epoch]
+  lambda_history <- lambda_history[1:epoch]
   gamma_history <- gamma_history[1:epoch]
   mu_history <- mu_history[1:epoch]
   grad_history <- grad_history[1:epoch]
@@ -1097,7 +1097,7 @@ brnn_nominal.default <- function(
     Y,
     fp_final$P,
     theta,
-    alpha
+    lambda
   )
   
   fitted_class <- factor(
@@ -1118,14 +1118,14 @@ brnn_nominal.default <- function(
     cat("Reason:", reason, "\n")
     cat("Epochs used:", epoch, "\n")
     cat("Final F:", round(loss_final$F, 8), "\n")
-    cat("Final alpha:", format(alpha, scientific = TRUE), "\n")
+    cat("Final lambda:", format(lambda, scientific = TRUE), "\n")
     cat("Training accuracy:", round(acc, 6), "\n")
     cat("------------------------------------------------------------\n")
   }
   
   out <- list(
     theta = theta,
-    alpha = alpha,
+    lambda = lambda,
     gamma = gamma_history[length(gamma_history)],
     epochs_used = epoch,
     reason = reason,
@@ -1148,7 +1148,7 @@ brnn_nominal.default <- function(
     F_history = F_history,
     L_history = L_history,
     Ew_history = Ew_history,
-    alpha_history = alpha_history,
+    lambda_history = lambda_history,
     gamma_history = gamma_history,
     mu_history = mu_history,
     grad_history = grad_history,
@@ -1249,12 +1249,12 @@ coef.brnn_nominal <- function(object, ...) {
   )
   
   # Weights of the covariates to the hidden layer
-  Lambda_names <- unlist(
+  W_in_names <- unlist(
     lapply(
       seq_len(object$neurons),
       function(h) {
         paste0(
-          "Lambda[",
+          "W_in[",
           predictor_names,
           ",",
           h,
@@ -1277,7 +1277,7 @@ coef.brnn_nominal <- function(object, ...) {
   names(coefficients) <- c(
     W_out_names,
     b_hidden_names,
-    Lambda_names,
+    W_in_names,
     b_out_names
   )
   
@@ -1296,7 +1296,7 @@ summary.brnn_nominal <- function(object, ...) {
   cat("Hidden neurons:", object$neurons, "\n")
   cat("Parameters:", object$q, "\n")
   cat("Activation:", object$activation, "\n")
-  cat("Final alpha:", object$alpha, "\n")
+  cat("Final lambda:", object$lambda, "\n")
   cat("Final gamma:", object$gamma, "\n")
   cat("Epochs used:", object$epochs_used, "\n")
   cat("Converged:", object$converged, "\n")
