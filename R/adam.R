@@ -29,8 +29,8 @@
 
 adam.brnn.default=function(x,y,neurons=2,lambda=NULL,alpha=0.05,beta1=0.9,beta2=0.999,
                            eps=1e-8,change=0.001,min_grad=1e-10,epochs=500,normalize=TRUE,
-                           theta_start=NULL,K=10,start.method="Xavier-Glorot",verbose=FALSE,
-                           WarmStart=TRUE,lambda.criterion="lambda.min",
+                           theta_start=NULL,K=10,start.method="Xavier-Glorot",penalize.bias=FALSE,
+                           verbose=FALSE,WarmStart=TRUE,lambda.criterion="lambda.min",
                            lambda_par=list(lambda_max=10,lambda_min=0.0001,nlambda=10))
 {
   reason="UNKNOWN";
@@ -38,6 +38,7 @@ adam.brnn.default=function(x,y,neurons=2,lambda=NULL,alpha=0.05,beta1=0.9,beta2=
   #Checking that the inputs are ok
   if(!is.vector(y)) stop("y must be a vector\n")
   if(!is.matrix(x)) x=as.matrix(x)
+  if(!is.logical(penalize.bias)|length(penalize.bias)!=1) stop("penalize.bias must be TRUE or FALSE\n")
   
   n=nrow(x)
   p=ncol(x)
@@ -48,7 +49,8 @@ adam.brnn.default=function(x,y,neurons=2,lambda=NULL,alpha=0.05,beta1=0.9,beta2=
     lambda=cv.adam.brnn(x=x,y=y,neurons=neurons,K=K,WarmStart=WarmStart,lambda_seq=lambda,
                         alpha=alpha,beta1=beta1,beta2=beta2,eps=eps,change=change,
                         epochs=epochs,normalize=normalize,start.method=start.method,
-                        lambda_par=lambda_par,lambda.criterion=lambda.criterion,verbose=verbose)
+                        penalize.bias=penalize.bias,lambda_par=lambda_par,
+                        lambda.criterion=lambda.criterion,verbose=verbose)
   }else if(!is.numeric(lambda)|length(lambda)==0){
     stop("A vector or a numerical value is required for the lambda parameter.")
   }
@@ -125,7 +127,8 @@ adam.brnn.default=function(x,y,neurons=2,lambda=NULL,alpha=0.05,beta1=0.9,beta2=
     
     e=y_normalized-pred
     Ed=sum(e^2)
-    Ew=sum(w^2)+sum(beta_p^2)
+    #the biases b are penalized only if penalize.bias=TRUE
+    Ew=sum(w^2)+sum(beta_p^2)+penalize.bias*sum(b^2)
     C=Ed+lambda*Ew
     
     F_history[epoch]=C
@@ -133,7 +136,7 @@ adam.brnn.default=function(x,y,neurons=2,lambda=NULL,alpha=0.05,beta1=0.9,beta2=
     comun=-2*e
     g_w=c(g_u%*%comun)+(2*lambda*w)
     delta=(base::tcrossprod(w,comun))*(1-g_u^2)
-    g_b=c(delta%*%unos)
+    g_b=c(delta%*%unos)+(2*lambda*penalize.bias*b)
     g_beta=delta%*%x_normalized+(2*lambda*beta_p)
     
     g[,1]=g_w
@@ -186,7 +189,7 @@ adam.brnn.default=function(x,y,neurons=2,lambda=NULL,alpha=0.05,beta1=0.9,beta2=
   out=list(theta=theta,lambda=lambda,Ed=Ed,Ew=Ew,F_history=F_history,reason=reason,epoch=epoch,
            neurons=neurons,p=p,n=n,npar=npar,x_normalized=x_normalized,x_base=x_base,x_spread=x_spread,
            y_base=y_base,y_spread=y_spread,y=y,
-           normalize=normalize)
+           normalize=normalize,penalize.bias=penalize.bias)
   out$call=match.call()
   class(out)=c("adam.brnn","brnn");
   
@@ -199,6 +202,7 @@ adam.brnn.default=function(x,y,neurons=2,lambda=NULL,alpha=0.05,beta1=0.9,beta2=
 #K-fold cross-validation for selecting lambda in adam
 cv.adam.brnn=function(x,y,neurons,K,WarmStart=TRUE,lambda_seq=NULL,alpha=0.05,beta1=0.9,beta2=0.999,
                       eps=1e-8,change=0.001,epochs=500,normalize=TRUE,start.method="Xavier-Glorot",
+                      penalize.bias=FALSE,
                       lambda_par=list(lambda_max=10,lambda_min=0.001,nlambda=10),
                       lambda.criterion="lambda.min",verbose=FALSE)
 {
@@ -266,7 +270,8 @@ cv.adam.brnn=function(x,y,neurons,K,WarmStart=TRUE,lambda_seq=NULL,alpha=0.05,be
       #adam
       res=adam.brnn(x=X_train,y=y_train,neurons=neurons,lambda=lambda,alpha=alpha,beta1=beta1,
                     beta2=beta2,eps=eps,change=change,epochs=epochs,normalize=FALSE,
-                    theta_start=theta_ini,start.method=start.method,verbose=FALSE)
+                    theta_start=theta_ini,start.method=start.method,
+                    penalize.bias=penalize.bias,verbose=FALSE)
       
       if(WarmStart) theta_ini=res$theta
       
@@ -303,10 +308,10 @@ initnw_alt = function(neurons,p){
   
   theta_matrix=matrix(0, nrow = neurons, ncol = p + 2)
   
-  # b
+  # w
   theta_matrix[, 1]=runif(neurons, -lim_w, lim_w) 
   
-  # w
+  # b
   theta_matrix[, 2]=runif(neurons, -lim_w, lim_w)
   
   # betas
@@ -339,7 +344,7 @@ getopt.lambda=function(lambda,cvm,cvsd, lambda.criterion = "lambda.1se"){
   return(lambda_final)
 }
 
-# aditional
+# additional
 adam.brnn = function(x, ...) UseMethod("adam.brnn")
 
 adam.brnn.formula = function(formula, data, contrasts = NULL, ...) {
