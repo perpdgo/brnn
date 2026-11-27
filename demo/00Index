@@ -5,4 +5,7 @@ Example_4			Prediction of milk production with Additive Genomic matrix
 Example_5			Prediction of milk production with Additive and Dominant matrices
 Example_6			Prediction of ordinal response (GLS)
 Example_7			Prediction of nominal response (Iris)
-
+Example_8			Fit a triangle wave model using ADAM
+Example_9			Fit a sine wave model using ADAM
+Example_10			Two input model using ADAM
+Example_11			Prediction of milk production with Additive Genomic matrix using ADAM
