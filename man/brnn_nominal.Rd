@@ -32,7 +32,7 @@ brnn_nominal(x, \dots)
   activation = "tanh",
   normalize = TRUE,
   epochs = 200,
-  alpha_init = 0.01,
+  lambda_init = 0.01,
   mu = 0.005,
   mu_dec = 0.1,
   mu_inc = 10,
@@ -93,7 +93,7 @@ brnn_nominal(x, \dots)
     Positive integer indicating the maximum number of training epochs.
   }
 
-  \item{alpha_init}{
+  \item{lambda_init}{
     Positive numeric value specifying the initial Bayesian regularization
     parameter.
   }
@@ -202,9 +202,9 @@ brnn_nominal(x, \dots)
   =
   \mathcal{L}(\boldsymbol{\theta})
   +
-  \alpha E_W(\boldsymbol{\theta})
+  \lambda E_W(\boldsymbol{\theta})
   }{
-  F(theta) = L(theta) + alpha E_W(theta)
+  F(theta) = L(theta) + lambda E_W(theta)
   }
   
   where:
@@ -228,7 +228,7 @@ brnn_nominal(x, \dots)
       E_W(theta) = 0.5 sum_r theta_r^2
     } is the quadratic penalty on weights and biases.
 
-    \item \eqn{\alpha}{alpha} is the Bayesian regularization parameter,
+    \item \eqn{\lambda}{lambda} is the Bayesian regularization parameter,
           which is updated adaptively using the effective number of
           parameters \eqn{\gamma}{gamma}.
   }
@@ -250,7 +250,7 @@ components:
   Estimated weights and biases of the neural network.
 }
 
-\item{\code{alpha}}{
+\item{\code{lambda}}{
   Final value of the Bayesian regularization parameter.
 }
 
@@ -295,7 +295,7 @@ components:
   and weight penalty.
 }
 
-\item{\code{alpha_history}, \code{gamma_history}}{
+\item{\code{lambda_history}, \code{gamma_history}}{
   Histories of the regularization parameter and the effective number of
   parameters.
 }
@@ -412,7 +412,7 @@ fit_default <- brnn_nominal(
   neurons = 2,
   epochs = 1000,
   verbose = TRUE,
-  seed = 123,
+  seed = 123
 )
 
 fit_default
@@ -434,20 +434,21 @@ trn_tst<-rep("trn",nrow(DryBean))
 index<-sample(1:nrow(DryBean),size=as.integer(0.20*nrow(DryBean)))
 trn_tst[index]<-"tst"
 
+# Default interface
 fit_default <- brnn_nominal(
   x = x[trn_tst=="trn",],
   y = y[trn_tst=="trn"],
   neurons = 2,
   epochs = 1000,
   verbose = TRUE,
-  seed = 123,
+  seed = 123
 )
 
 predictions<-predict(fit_default,newdata=x[trn_tst=="tst",],type="class")
 
 table(predictions,y[trn_tst=="tst"])
 
-#
+# Formula interface
 fit_formula <- brnn_nominal(
   Class ~ .,
   data = subset(DryBean,trn_tst=="trn"),
@@ -457,7 +458,10 @@ fit_formula <- brnn_nominal(
   seed = 123
 )
 
-#predict(fit_default,newdata=subset(DryBean,trn_tst=="tst"),type="class")
+predictions_formula<-predict(fit_formula,newdata=subset(DryBean,trn_tst=="tst"),type="class")
+
+table(predictions_formula,y[trn_tst=="tst"])
+
 }
 
 }
