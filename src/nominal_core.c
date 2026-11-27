@@ -36,7 +36,7 @@
  *
  *   X       : n x p
  *   W_out   : s x K
- *   Lambda  : p x s
+ *   W_in  : p x s
  *
  * Codes for activation functions:
  *
@@ -49,7 +49,7 @@ SEXP forward_pass_nominal(SEXP X,
                           SEXP p_,
                           SEXP W_out,
                           SEXP b_hidden,
-                          SEXP Lambda,
+                          SEXP W_in,
                           SEXP b_out,
                           SEXP neurons_,
                           SEXP K_,
@@ -82,7 +82,7 @@ SEXP forward_pass_nominal(SEXP X,
     PROTECT(X = coerceVector(X, REALSXP));
     PROTECT(W_out = coerceVector(W_out, REALSXP));
     PROTECT(b_hidden = coerceVector(b_hidden, REALSXP));
-    PROTECT(Lambda = coerceVector(Lambda, REALSXP));
+    PROTECT(W_in = coerceVector(W_in, REALSXP));
     PROTECT(b_out = coerceVector(b_out, REALSXP));
 
     PROTECT(U = coerceVector(U, REALSXP));
@@ -93,7 +93,7 @@ SEXP forward_pass_nominal(SEXP X,
     double *pX = REAL(X);
     double *pW_out = REAL(W_out);
     double *pb_hidden = REAL(b_hidden);
-    double *pLambda = REAL(Lambda);
+    double *pW_in = REAL(W_in);
     double *pb_out = REAL(b_out);
 
     double *pU = REAL(U);
@@ -104,7 +104,7 @@ SEXP forward_pass_nominal(SEXP X,
     /*
      * Inputs in the hidden layer:
      *
-     * U = X %*% Lambda + b_hidden
+     * U = X %*% W_in + b_hidden
      *
      * Activation function:
      *
@@ -119,7 +119,7 @@ SEXP forward_pass_nominal(SEXP X,
             for (j = 0; j < p; j++) {
                 value +=
                     pX[i + j * n] *
-                    pLambda[j + k * p];
+                    pW_in[j + k * p];
             }
 
             pU[i + k * n] = value;
@@ -253,7 +253,7 @@ SEXP forward_pass_nominal(SEXP X,
  *
  *   1. W_out, by columns
  *   2. b_hidden
- *   3. Lambda, by colums
+ *   3. W_in, by colums
  *   4. b_out
  *
  * matrix products are performed using BLAS.
@@ -263,7 +263,7 @@ SEXP hessian_approx_nominal(SEXP X,
                             SEXP U,
                             SEXP H_hidden,
                             SEXP W_out,
-                            SEXP Lambda,
+                            SEXP W_in,
                             SEXP n_,
                             SEXP p_,
                             SEXP neurons_,
@@ -306,7 +306,7 @@ SEXP hessian_approx_nominal(SEXP X,
     PROTECT(U = coerceVector(U, REALSXP));
     PROTECT(H_hidden = coerceVector(H_hidden, REALSXP));
     PROTECT(W_out = coerceVector(W_out, REALSXP));
-    PROTECT(Lambda = coerceVector(Lambda, REALSXP));
+    PROTECT(W_in = coerceVector(W_in, REALSXP));
     PROTECT(H_data = coerceVector(H_data, REALSXP));
 
     /*
@@ -317,7 +317,7 @@ SEXP hessian_approx_nominal(SEXP X,
         XLENGTH(U) != (R_xlen_t) n * s ||
         XLENGTH(H_hidden) != (R_xlen_t) n * s ||
         XLENGTH(W_out) != (R_xlen_t) s * K ||
-        XLENGTH(Lambda) != (R_xlen_t) p * s ||
+        XLENGTH(W_in) != (R_xlen_t) p * s ||
         XLENGTH(H_data) != (R_xlen_t) q * q) {
 
         UNPROTECT(7);
@@ -368,12 +368,12 @@ SEXP hessian_approx_nominal(SEXP X,
         );
 
     /*
-     * Lambda is taken as argument to keep the same conceptual interface
+     * W_in is taken as argument to keep the same conceptual interface
      * of a previous implementation in C++. The values are not used directly 
      * here because U was already computed during the propagation 
     */
 
-    (void) REAL(Lambda);
+    (void) REAL(W_in);
 
     /*
      * Inicializar the Hessian matrix
@@ -463,9 +463,9 @@ SEXP hessian_approx_nominal(SEXP X,
         }
 
         /*
-         * 3. Derivatives with respect to Lambda
+         * 3. Derivatives with respect to W_in
          *
-         * Lambda is vectorized by columns
+         * W_in is vectorized by columns
          */
         for (k = 0; k < s; k++) {
 
