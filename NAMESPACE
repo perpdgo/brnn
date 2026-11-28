@@ -38,4 +38,6 @@ S3method(brnn_nominal, formula)
 S3method(print, brnn_nominal)
 S3method(coef, brnn_nominal)
 
+S3method(adam.brnn, default)
+S3method(adam.brnn, formula)
 
