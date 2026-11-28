@@ -31,7 +31,7 @@ adam.brnn.default=function(x,y,neurons=2,lambda=NULL,alpha=0.05,beta1=0.9,beta2=
                            eps=1e-8,change=0.001,min_grad=1e-10,epochs=500,normalize=TRUE,
                            theta_start=NULL,K=10,start.method="Xavier-Glorot",penalize.bias=FALSE,
                            verbose=FALSE,WarmStart=TRUE,lambda.criterion="lambda.min",
-                           lambda_par=list(lambda_max=10,lambda_min=0.0001,nlambda=10))
+                           lambda_par=list(lambda_max=10,lambda_min=0.0001,nlambda=10),...)
 {
   reason="UNKNOWN";
   
