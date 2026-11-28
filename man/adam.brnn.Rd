@@ -24,7 +24,7 @@
        eps=1e-8,change=0.001,min_grad=1e-10,epochs=500,normalize=TRUE,
        theta_start=NULL,K=10,start.method="Xavier-Glorot",penalize.bias=FALSE,
        verbose=FALSE,WarmStart=TRUE,lambda.criterion="lambda.min",
-       lambda_par=list(lambda_max=10,lambda_min=0.0001,nlambda=10))
+       lambda_par=list(lambda_max=10,lambda_min=0.0001,nlambda=10),\dots)
 
   cv.adam.brnn(x,y,neurons,K,WarmStart=TRUE,lambda_seq=NULL,alpha=0.05,beta1=0.9,
        beta2=0.999,eps=1e-8,change=0.001,epochs=500,normalize=TRUE,
